@@ -27,7 +27,9 @@ var SPUtility = (function ($) {
          'decimalSeparator': '.',   // separates decimal from number
          'thousandsSeparator': ',', // separates thousands in number
          'stringYes': 'Yes',        // Text for when boolean field is True
-         'stringNo': 'No'           // Text for when boolean field is False
+         'stringNo': 'No',           // Text for when boolean field is False
+         'termSeparator': ';',      // separates terms
+         'termLabelSeparator': '|'  // separates term from guid
       };
 
    /*
@@ -350,6 +352,19 @@ var SPUtility = (function ($) {
          return text.replace(/^\s+/, '').replace(/\s+$/g, '');
       }
    };
+   
+   /*
+   Only apply to fields without required,
+   not include validation logic
+   */
+   SPField.prototype.MakeRequired = function(){
+     if(!this.IsRequired){
+       var $nobr = this.Label.children('nobr')
+       if($nobr.children('span.ms-accentText').length === 0){
+         $("<span class='ms-accentText' title='This is a required field.'> *</span>").appendTo($nobr)
+       }
+     }
+   }
 
    SPField.prototype.SetDescription = function (descr) {
       var ctls;
@@ -747,6 +762,10 @@ var SPUtility = (function ($) {
       this._updateReadOnlyLabel(this.GetValue().toString());
       return this;
    };
+   
+   SPRadioChoiceField.prototype.MakeReadOnly = function(){
+     return this._makeReadOnly((this.GetValue()||'').toString());
+   }
 
    /*
    *   SPCheckboxChoiceField class
@@ -1597,7 +1616,8 @@ var SPUtility = (function ($) {
     */
    function SPUserField2013(fieldParams) {
       SPField.call(this, fieldParams);
-
+      
+      this.Controls = fieldParams.controlsCell
       if (this.Controls === null) {
          return;
       }
@@ -1727,7 +1747,59 @@ var SPUtility = (function ($) {
       this._updateReadOnlyLabel();
       return this;
    };
+   
+   /* SPTaxonomyField class
+    * Supports metadata column
+    */
+   function SPTaxonomyField(fieldParams){
+      SPField.call(this, fieldParams);
+      this.Controls = fieldParams.controlsCell
+      
+      if(this.Controls === null){
+        return;
+      }
+      
+      this.ClientTaxonomyWebTaggingControl = null
+      
+      var divContainer = $(this.Controls).find("div[id='" + fieldParams.internalName + "_$container']")[0]
+      if(divContainer){
+        this.ClientTaxonomyWebTaggingControl = new Microsoft.SharePoint.Taxonomy.ControlObject(divContainer)
+      }
+    }
+   
+   // Inherit from SPField
+   SPTaxonomyField.prototype = Object.create(SPField.prototype);
 
+   SPTaxonomyField.prototype.GetValue = function(){
+     if(this.ClientTaxonomyWebTaggingControl !== null){
+       var terms = this.ClientTaxonomyWebTaggingControl.getRawText()
+       return terms.length < 1 ? [] : 
+        terms.split(_settings['termSeparator']).map(function(t){
+          var term = t.split(_settings['termLabelSeparator'])
+          return {label: term[0], guid: term[1]}
+        })
+     }
+     return []
+   }
+   
+   SPTaxonomyField.prototype.GetValueString = function () {
+      return this.GetValue().map(function(v){return v.label}).join(_settings['termSeparator'])
+   };
+   
+   SPTaxonomyField.prototype.GetRawValue = function(){
+     if(this.ClientTaxonomyWebTaggingControl !== null){
+       return this.ClientTaxonomyWebTaggingControl.getRawText()
+     }
+     return ''
+   }
+   
+   SPTaxonomyField.prototype.SetValue = function(termValues){
+     if(this.ClientTaxonomyWebTaggingControl !== null){
+        this.ClientTaxonomyWebTaggingControl.setRawText(termValues)
+        this.ClientTaxonomyWebTaggingControl.retrieveTerms()
+     }
+   }
+    
    /*
     *   SPDispFormTextField class
     *   Supports DispForm text fields
@@ -1895,6 +1967,10 @@ var SPUtility = (function ($) {
       case 'SPFieldLookupMulti':
          field = new SPLookupMultiField(spFieldParams);
          break;
+      case 'SPFieldTaxonomyFieldType':
+      case 'SPFieldTaxonomyFieldTypeMulti':
+          field = new SPTaxonomyField(spFieldParams);
+          break;
       default:
          field = new SPField(spFieldParams);
          break;
@@ -1999,7 +2075,9 @@ var SPUtility = (function ($) {
       'decimalSeparator': '.',   // separates decimal from number
       'thousandsSeparator': ',', // separates thousands in number
       'stringYes': 'Yes',        // Text for when boolean field is True
-      'stringNo': 'No'           // Text for when boolean field is False
+      'stringNo': 'No',          // Text for when boolean field is False
+      'termSeparator': ';',      // separates terms
+      'termLabelSeparator': '|'  // separates term from guid
     }
    **/
    SPUtility.Setup = function (settings) {
