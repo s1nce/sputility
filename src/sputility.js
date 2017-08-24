@@ -1,3 +1,16 @@
+/*
+   Name: SPUtility.js
+   Version: 0.14.2
+   Built: 2016-04-19
+   Author: Kit Menke
+   https://sputility.codeplex.com/
+   Copyright (c) 2016
+   License: The MIT License (MIT)
+*/
+/*
+   Version 0.14.4
+   Built: 2017-05-11
+*/
 // Object.create shim for class inheritance
 if (!Object.create) {
    Object.create = function (o) {
@@ -317,8 +330,8 @@ var SPUtility = (function ($) {
       this.IsRequired = fieldParams.isRequired;
       this.Type = fieldParams.type;
 
-      var children = $(fieldParams.controlsCell).children("span").last();
-      //.not("script"); // support for binding framework e.g. jsviews
+	  var children = $(fieldParams.controlsCell).children("span").not("script"); // support for binding framework e.g. jsviews
+	  //.last() will return wrong control for some fields
       if (children.length > 0) {
          this.Controls = children[0];
       } else {
