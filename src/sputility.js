@@ -36,7 +36,9 @@ var SPUtility = (function ($) {
       _spVersion = 12,    // current sharepoint version
       _settings = {                 // DEFAULT SETTINGS:
          'timeFormat': '12HR',      // 12HR or 24HR
-         'dateSeparator': '/',      // separates month/day/year with / or .
+		 'dateSeparator': '/',      // separates month/day/year with / or .
+		 'dateFormat': 'MM/dd/yyyy', //format for only date
+		 'dateTimeFormat': 'MM/dd/yyyy HH:mm:ss', //format for date with time
          'decimalSeparator': '.',   // separates decimal from number
          'thousandsSeparator': ',', // separates thousands in number
          'stringYes': 'Yes',        // Text for when boolean field is True
@@ -124,6 +126,339 @@ var SPUtility = (function ($) {
          i = parseInt(n = Math.abs(+n || 0).toFixed(c), 10) + "",
          j = (j = i.length) > 3 ? j % 3 : 0;
       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+   }
+
+   function formatByRegion(d){
+	var culture = _spPageContextInfo.currentCultureName || 'en-US'
+	var formats = {
+	   "ar-SA" : "dd/MM/yy",
+	   "bg-BG" : "dd.M.yyyy",
+	   "ca-ES" : "dd/MM/yyyy",
+	   "zh-TW" : "yyyy/M/d",
+	   "cs-CZ" : "d.M.yyyy",
+	   "da-DK" : "dd-MM-yyyy",
+	   "de-DE" : "dd.MM.yyyy",
+	   "el-GR" : "d/M/yyyy",
+	   "en-US" : "M/d/yyyy",
+	   "fi-FI" : "d.M.yyyy",
+	   "fr-FR" : "dd/MM/yyyy",
+	   "he-IL" : "dd/MM/yyyy",
+	   "hu-HU" : "yyyy. MM. dd.",
+	   "is-IS" : "d.M.yyyy",
+	   "it-IT" : "dd/MM/yyyy",
+	   "ja-JP" : "yyyy/MM/dd",
+	   "ko-KR" : "yyyy-MM-dd",
+	   "nl-NL" : "d-M-yyyy",
+	   "nb-NO" : "dd.MM.yyyy",
+	   "pl-PL" : "yyyy-MM-dd",
+	   "pt-BR" : "d/M/yyyy",
+	   "ro-RO" : "dd.MM.yyyy",
+	   "ru-RU" : "dd.MM.yyyy",
+	   "hr-HR" : "d.M.yyyy",
+	   "sk-SK" : "d. M. yyyy",
+	   "sq-AL" : "yyyy-MM-dd",
+	   "sv-SE" : "yyyy-MM-dd",
+	   "th-TH" : "d/M/yyyy",
+	   "tr-TR" : "dd.MM.yyyy",
+	   "ur-PK" : "dd/MM/yyyy",
+	   "id-ID" : "dd/MM/yyyy",
+	   "uk-UA" : "dd.MM.yyyy",
+	   "be-BY" : "dd.MM.yyyy",
+	   "sl-SI" : "d.M.yyyy",
+	   "et-EE" : "d.MM.yyyy",
+	   "lv-LV" : "yyyy.MM.dd.",
+	   "lt-LT" : "yyyy.MM.dd",
+	   "fa-IR" : "MM/dd/yyyy",
+	   "vi-VN" : "dd/MM/yyyy",
+	   "hy-AM" : "dd.MM.yyyy",
+	   "az-Latn-AZ" : "dd.MM.yyyy",
+	   "eu-ES" : "yyyy/MM/dd",
+	   "mk-MK" : "dd.MM.yyyy",
+	   "af-ZA" : "yyyy/MM/dd",
+	   "ka-GE" : "dd.MM.yyyy",
+	   "fo-FO" : "dd-MM-yyyy",
+	   "hi-IN" : "dd-MM-yyyy",
+	   "ms-MY" : "dd/MM/yyyy",
+	   "kk-KZ" : "dd.MM.yyyy",
+	   "ky-KG" : "dd.MM.yy",
+	   "sw-KE" : "M/d/yyyy",
+	   "uz-Latn-UZ" : "dd/MM yyyy",
+	   "tt-RU" : "dd.MM.yyyy",
+	   "pa-IN" : "dd-MM-yy",
+	   "gu-IN" : "dd-MM-yy",
+	   "ta-IN" : "dd-MM-yyyy",
+	   "te-IN" : "dd-MM-yy",
+	   "kn-IN" : "dd-MM-yy",
+	   "mr-IN" : "dd-MM-yyyy",
+	   "sa-IN" : "dd-MM-yyyy",
+	   "mn-MN" : "yy.MM.dd",
+	   "gl-ES" : "dd/MM/yy",
+	   "kok-IN" : "dd-MM-yyyy",
+	   "syr-SY" : "dd/MM/yyyy",
+	   "dv-MV" : "dd/MM/yy",
+	   "ar-IQ" : "dd/MM/yyyy",
+	   "zh-CN" : "yyyy/M/d",
+	   "de-CH" : "dd.MM.yyyy",
+	   "en-GB" : "dd/MM/yyyy",
+	   "es-MX" : "dd/MM/yyyy",
+	   "fr-BE" : "d/MM/yyyy",
+	   "it-CH" : "dd.MM.yyyy",
+	   "nl-BE" : "d/MM/yyyy",
+	   "nn-NO" : "dd.MM.yyyy",
+	   "pt-PT" : "dd-MM-yyyy",
+	   "sr-Latn-CS" : "d.M.yyyy",
+	   "sv-FI" : "d.M.yyyy",
+	   "az-Cyrl-AZ" : "dd.MM.yyyy",
+	   "ms-BN" : "dd/MM/yyyy",
+	   "uz-Cyrl-UZ" : "dd.MM.yyyy",
+	   "ar-EG" : "dd/MM/yyyy",
+	   "zh-HK" : "d/M/yyyy",
+	   "de-AT" : "dd.MM.yyyy",
+	   "en-AU" : "d/MM/yyyy",
+	   "es-ES" : "dd/MM/yyyy",
+	   "fr-CA" : "yyyy-MM-dd",
+	   "sr-Cyrl-CS" : "d.M.yyyy",
+	   "ar-LY" : "dd/MM/yyyy",
+	   "zh-SG" : "d/M/yyyy",
+	   "de-LU" : "dd.MM.yyyy",
+	   "en-CA" : "dd/MM/yyyy",
+	   "es-GT" : "dd/MM/yyyy",
+	   "fr-CH" : "dd.MM.yyyy",
+	   "ar-DZ" : "dd-MM-yyyy",
+	   "zh-MO" : "d/M/yyyy",
+	   "de-LI" : "dd.MM.yyyy",
+	   "en-NZ" : "d/MM/yyyy",
+	   "es-CR" : "dd/MM/yyyy",
+	   "fr-LU" : "dd/MM/yyyy",
+	   "ar-MA" : "dd-MM-yyyy",
+	   "en-IE" : "dd/MM/yyyy",
+	   "es-PA" : "MM/dd/yyyy",
+	   "fr-MC" : "dd/MM/yyyy",
+	   "ar-TN" : "dd-MM-yyyy",
+	   "en-ZA" : "yyyy/MM/dd",
+	   "es-DO" : "dd/MM/yyyy",
+	   "ar-OM" : "dd/MM/yyyy",
+	   "en-JM" : "dd/MM/yyyy",
+	   "es-VE" : "dd/MM/yyyy",
+	   "ar-YE" : "dd/MM/yyyy",
+	   "en-029" : "MM/dd/yyyy",
+	   "es-CO" : "dd/MM/yyyy",
+	   "ar-SY" : "dd/MM/yyyy",
+	   "en-BZ" : "dd/MM/yyyy",
+	   "es-PE" : "dd/MM/yyyy",
+	   "ar-JO" : "dd/MM/yyyy",
+	   "en-TT" : "dd/MM/yyyy",
+	   "es-AR" : "dd/MM/yyyy",
+	   "ar-LB" : "dd/MM/yyyy",
+	   "en-ZW" : "M/d/yyyy",
+	   "es-EC" : "dd/MM/yyyy",
+	   "ar-KW" : "dd/MM/yyyy",
+	   "en-PH" : "M/d/yyyy",
+	   "es-CL" : "dd-MM-yyyy",
+	   "ar-AE" : "dd/MM/yyyy",
+	   "es-UY" : "dd/MM/yyyy",
+	   "ar-BH" : "dd/MM/yyyy",
+	   "es-PY" : "dd/MM/yyyy",
+	   "ar-QA" : "dd/MM/yyyy",
+	   "es-BO" : "dd/MM/yyyy",
+	   "es-SV" : "dd/MM/yyyy",
+	   "es-HN" : "dd/MM/yyyy",
+	   "es-NI" : "dd/MM/yyyy",
+	   "es-PR" : "dd/MM/yyyy",
+	   "am-ET" : "d/M/yyyy",
+	   "tzm-Latn-DZ" : "dd-MM-yyyy",
+	   "iu-Latn-CA" : "d/MM/yyyy",
+	   "sma-NO" : "dd.MM.yyyy",
+	   "mn-Mong-CN" : "yyyy/M/d",
+	   "gd-GB" : "dd/MM/yyyy",
+	   "en-MY" : "d/M/yyyy",
+	   "prs-AF" : "dd/MM/yy",
+	   "bn-BD" : "dd-MM-yy",
+	   "wo-SN" : "dd/MM/yyyy",
+	   "rw-RW" : "M/d/yyyy",
+	   "qut-GT" : "dd/MM/yyyy",
+	   "sah-RU" : "MM.dd.yyyy",
+	   "gsw-FR" : "dd/MM/yyyy",
+	   "co-FR" : "dd/MM/yyyy",
+	   "oc-FR" : "dd/MM/yyyy",
+	   "mi-NZ" : "dd/MM/yyyy",
+	   "ga-IE" : "dd/MM/yyyy",
+	   "se-SE" : "yyyy-MM-dd",
+	   "br-FR" : "dd/MM/yyyy",
+	   "smn-FI" : "d.M.yyyy",
+	   "moh-CA" : "M/d/yyyy",
+	   "arn-CL" : "dd-MM-yyyy",
+	   "ii-CN" : "yyyy/M/d",
+	   "dsb-DE" : "d. M. yyyy",
+	   "ig-NG" : "d/M/yyyy",
+	   "kl-GL" : "dd-MM-yyyy",
+	   "lb-LU" : "dd/MM/yyyy",
+	   "ba-RU" : "dd.MM.yy",
+	   "nso-ZA" : "yyyy/MM/dd",
+	   "quz-BO" : "dd/MM/yyyy",
+	   "yo-NG" : "d/M/yyyy",
+	   "ha-Latn-NG" : "d/M/yyyy",
+	   "fil-PH" : "M/d/yyyy",
+	   "ps-AF" : "dd/MM/yy",
+	   "fy-NL" : "d-M-yyyy",
+	   "ne-NP" : "M/d/yyyy",
+	   "se-NO" : "dd.MM.yyyy",
+	   "iu-Cans-CA" : "d/M/yyyy",
+	   "sr-Latn-RS" : "d.M.yyyy",
+	   "si-LK" : "yyyy-MM-dd",
+	   "sr-Cyrl-RS" : "d.M.yyyy",
+	   "lo-LA" : "dd/MM/yyyy",
+	   "km-KH" : "yyyy-MM-dd",
+	   "cy-GB" : "dd/MM/yyyy",
+	   "bo-CN" : "yyyy/M/d",
+	   "sms-FI" : "d.M.yyyy",
+	   "as-IN" : "dd-MM-yyyy",
+	   "ml-IN" : "dd-MM-yy",
+	   "en-IN" : "dd-MM-yyyy",
+	   "or-IN" : "dd-MM-yy",
+	   "bn-IN" : "dd-MM-yy",
+	   "tk-TM" : "dd.MM.yy",
+	   "bs-Latn-BA" : "d.M.yyyy",
+	   "mt-MT" : "dd/MM/yyyy",
+	   "sr-Cyrl-ME" : "d.M.yyyy",
+	   "se-FI" : "d.M.yyyy",
+	   "zu-ZA" : "yyyy/MM/dd",
+	   "xh-ZA" : "yyyy/MM/dd",
+	   "tn-ZA" : "yyyy/MM/dd",
+	   "hsb-DE" : "d. M. yyyy",
+	   "bs-Cyrl-BA" : "d.M.yyyy",
+	   "tg-Cyrl-TJ" : "dd.MM.yy",
+	   "sr-Latn-BA" : "d.M.yyyy",
+	   "smj-NO" : "dd.MM.yyyy",
+	   "rm-CH" : "dd/MM/yyyy",
+	   "smj-SE" : "yyyy-MM-dd",
+	   "quz-EC" : "dd/MM/yyyy",
+	   "quz-PE" : "dd/MM/yyyy",
+	   "hr-BA" : "d.M.yyyy.",
+	   "sr-Latn-ME" : "d.M.yyyy",
+	   "sma-SE" : "yyyy-MM-dd",
+	   "en-SG" : "d/M/yyyy",
+	   "ug-CN" : "yyyy-M-d",
+	   "sr-Cyrl-BA" : "d.M.yyyy",
+	   "es-US" : "M/d/yyyy"}
+	 
+	 return formatDate(d, formats[culture])
+  }
+  
+  function formatDate(d, f){
+	if(typeof d.format === 'function'){
+	  return d.format(f)
+	}else{
+	  var longMonthsInYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	  var daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+	  var fs = f.split('')
+	  var start = 0
+	  var end = f.length - 1
+	  var pattern = []
+	  
+	  fs.forEach(function(i, j){
+		if(j == 0) return
+		if(fs[j-1] == i){
+		  if(j == end){pattern.push(f.substr(start))}
+		 }else{
+		   pattern.push(f.substr(start, j - start))
+		   start = j
+		 }
+	   })
+	   
+	 var year = d.getFullYear()
+	 var month = d.getMonth()
+	 var day = d.getDate()
+	 var week = d.getDay()
+	 var hour = d.getHours()
+	 var minute = d.getMinutes()
+	 var second = d.getSeconds()
+	 var millsecond = paddingLeft(String(d.getMilliseconds()), '0', 7)
+
+	 var formated = pattern.map(function(s){
+	   switch(s){
+		 case 'y': 
+		   return String(+(String(year).slice(-2)))
+		 case 'yy': 
+		   return String(year).slice(-2)
+		 case 'yyy': 
+		   return String(year).slice(-3)
+		 case 'yyyy': 
+		   return String(year).slice(-4)
+		 case 'M': 
+		   return String(month + 1)
+		 case 'MM': 
+		   return paddingLeft(String(month + 1), '0', 2)
+		 case 'MMM': 
+		   return longMonthsInYear[month].slice(0, 3)
+		 case 'MMMM': 
+		   return longMonthsInYear[month]
+		 case 'd': 
+		   return String(day)
+		 case 'dd': 
+		   return paddingLeft(String(day), '0', 2)
+		 case 'ddd': 
+		   return daysInWeek[week].slice(0, 3)
+		 case 'dddd':
+		   return daysInWeek[week]
+		 case 'h': 
+		   return String(hour > 12 ? (hour - 12) : hour)
+		 case 'hh':
+		   return paddingLeft(String(hour > 12 ? (hour - 12) : hour), '0', 2)
+		 case 'H':
+		   return String(hour)
+		 case 'HH':
+		   return paddingLeft(String(hour), '0', 2)
+		 case 'm': 
+		   return String(minute)
+		 case 'mm': 
+		   return paddingLeft(String(minute), '0', 2)
+		 case 's': 
+		   return String(second)
+		 case 'ss': 
+		   return paddingLeft(String(second), '0', 2)
+		 case 'f': 
+		   return millsecond.slice(0, 1)
+		 case 'ff': 
+		   return millsecond.slice(0, 2)
+		 case 'fff': 
+		   return millsecond.slice(0, 3)
+		 case 'ffff': 
+		   return millsecond.slice(0, 4)
+		 case 'fffff': 
+		   return millsecond.slice(0, 5)
+		 case 'ffffff': 
+		   return millsecond.slice(0, 6)
+		 case 'fffffff': 
+		   return millsecond.slice(0, 7)
+		 case 'F': 
+		   return millsecond.slice(0, 1) == '0' ? '' : millsecond.slice(0, 1)
+		 case 'FF': 
+		   return +(millsecond.slice(0, 2)) == 0 ? '' : (+(millsecond.slice(0, 2)))
+		 case 'FFF': 
+		   return +(millsecond.slice(0, 3)) == 0 ? '' : (+(millsecond.slice(0, 3)))
+		 case 'FFFF': 
+		   return +(millsecond.slice(0, 4)) == 0 ? '' : (+(millsecond.slice(0, 4)))
+		 case 'FFFFF': 
+		   return +(millsecond.slice(0, 5)) == 0 ? '' : (+(millsecond.slice(0, 5)))
+		 case 'FFFFFF': 
+		   return +(millsecond.slice(0, 6)) == 0 ? '' : (+(millsecond.slice(0, 6)))
+		 case 'FFFFFFF': 
+		   return +(millsecond.slice(0, 7)) == 0 ? '' : (+(millsecond.slice(0, 7)))
+		 default: 
+		   return s
+	   }
+	 })
+	 return formated.join('')
+	}
+  }
+  
+  function paddingLeft(s, p, l){
+	if(s.length >= l) return s
+	while(s.length < l){
+	  s = p + s
+	 }
+	 return s
    }
 
    // Gets the input controls for a field (used for Textboxes)
@@ -977,21 +1312,8 @@ var SPUtility = (function ($) {
    SPDateTimeFieldValue.prototype.GetShortDateString = function () {
       if (!this.IsValidDate()) {
          return '';
-      }
-      var strDate;
-      if (this.TimeFormat === '12HR') {
-         // m/d/YYYY
-         strDate = this.Month + _settings['dateSeparator'] +
-            this.Day + _settings['dateSeparator'] +
-            this.Year;
-      } else {
-         // DD/MM/YYYY
-         strDate = this.PadWithZero(this.Day) + _settings['dateSeparator'] +
-            this.PadWithZero(this.Month) + _settings['dateSeparator'] +
-            this.Year;
-      }
-
-      return strDate;
+	  }
+	  return formatByRegion((new Date(this.Year, this.Month - 1, this.Day)));
    };
 
    // transforms a date object into a string
@@ -1064,37 +1386,33 @@ var SPUtility = (function ($) {
    SPDateTimeField.prototype = Object.create(SPField.prototype);
 
    SPDateTimeField.prototype.GetValue = function () {
-      var hour, strMinute, arrShortDate = $(this.DateTextbox).val().split(_settings['dateSeparator']);
+	  var hour, strMinute, arrShortDate = $(this.DateTextbox).val().split(_settings['dateSeparator']);
+	  var rawText = this.GetRawValue();
+	  var raw = new Date(rawText);
 
       var spDate = new SPDateTimeFieldValue();
       spDate.TimeFormat = _settings['timeFormat'];
-      spDate.DateSeparator = _settings['dateSeparator'];
-
-      if (arrShortDate.length === 3) {
-         var year, month, day;
-         if (_settings['timeFormat'] === '12HR') {
-            month = arrShortDate[0];
-            day = arrShortDate[1];
-            year = arrShortDate[2];
-         } else {
-            day = arrShortDate[0];
-            month = arrShortDate[1];
-            year = arrShortDate[2];
-         }
-         spDate.SetDate(year, month, day);
-      }
-
-      if (!this.IsDateOnly) {
-         hour = $(this.HourDropdown).val();
-         if (this.HourValueFormat === 'number') {
-            hour = getInteger(hour);
-         }
-         strMinute = $(this.MinuteDropdown).val();
-         spDate.SetTime(hour, strMinute);
-      }
+	  spDate.DateSeparator = _settings['dateSeparator'];
+	  
+	  if(rawText.length > 0 && raw.toString() !== 'Invalid Date'){
+		spDate.SetDate(raw.getFullYear(), raw.getMonth() + 1, raw.getDate());
+		
+		if (!this.IsDateOnly) {
+		  spDate.SetTime(raw.getHours(), raw.getMinutes());
+		}
+	  }
 
       return spDate;
    };
+
+   SPDateTimeField.prototype.GetRawValue = function(){
+	var date = $(this.DateTextbox).val();
+	if (!this.IsDateOnly){
+	  date += " " + getInteger($(this.HourDropdown).val()) + ":" + $(this.MinuteDropdown).val();
+	}
+	
+	return date;
+  }
 
    SPDateTimeField.prototype.SetValue = function (year, month, day, hour, minute) {
       if (isUndefined(year) || year === null || year === "") {
@@ -2084,7 +2402,9 @@ var SPUtility = (function ($) {
     * Configure SPUtility by passing an object containing settings.
     _settings = {                 // DEFAULT SETTINGS:
       'timeFormat': '12HR',      // 12HR or 24HR
-      'dateSeparator': '/',      // separates month/day/year with / or .
+	  'dateSeparator': '/',      // separates month/day/year with / or .
+	  'dateFormat': 'MM/dd/yyyy', //format for only date
+	  'dateTimeFormat': 'MM/dd/yyyy HH:mm:ss', //format for date with time
       'decimalSeparator': '.',   // separates decimal from number
       'thousandsSeparator': ',', // separates thousands in number
       'stringYes': 'Yes',        // Text for when boolean field is True
