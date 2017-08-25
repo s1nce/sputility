@@ -1582,7 +1582,11 @@ var SPUtility = (function ($) {
 	// Inherit from SPField
 	SPDropdownLookupField.prototype = Object.create(SPField.prototype);
 
-	SPDropdownLookupField.prototype.GetValue = function () {
+	// Return selected option's title or value
+	SPDropdownLookupField.prototype.GetValue = function (returnValue) {
+		if(returnValue === true){
+			return this.Dropdown.options[this.Dropdown.selectedIndex].value;
+		}
 		return this.Dropdown.options[this.Dropdown.selectedIndex].text;
 	};
 
