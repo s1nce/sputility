@@ -129,7 +129,7 @@ var SPUtility = (function ($) {
    }
 
    function formatByRegion(d){
-	var culture = _spPageContextInfo.currentCultureName || 'en-US'
+	var culture = typeof _spPageContextInfo === 'object' ? _spPageContextInfo.currentCultureName : 'en-US';
 	var formats = {
 	   "ar-SA" : "dd/MM/yy",
 	   "bg-BG" : "dd.M.yyyy",
@@ -340,125 +340,125 @@ var SPUtility = (function ($) {
 	   "en-SG" : "d/M/yyyy",
 	   "ug-CN" : "yyyy-M-d",
 	   "sr-Cyrl-BA" : "d.M.yyyy",
-	   "es-US" : "M/d/yyyy"}
+	   "es-US" : "M/d/yyyy"};
 	 
-	 return formatDate(d, formats[culture])
+	 return formatDate(d, formats[culture]);
   }
   
   function formatDate(d, f){
 	if(typeof d.format === 'function'){
-	  return d.format(f)
+	  return d.format(f);
 	}else{
-	  var longMonthsInYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	  var longMonthsInYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	  var daysInWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-	  var fs = f.split('')
-	  var start = 0
-	  var end = f.length - 1
-	  var pattern = []
+	  var fs = f.split('');
+	  var start = 0;
+	  var end = f.length - 1;
+	  var pattern = [];
 	  
 	  fs.forEach(function(i, j){
-		if(j == 0) return
+		if(j == 0) return;
 		if(fs[j-1] == i){
-		  if(j == end){pattern.push(f.substr(start))}
+		  if(j == end){pattern.push(f.substr(start));}
 		 }else{
-		   pattern.push(f.substr(start, j - start))
-		   start = j
+		   pattern.push(f.substr(start, j - start));
+		   start = j;
 		 }
 	   })
 	   
-	 var year = d.getFullYear()
-	 var month = d.getMonth()
-	 var day = d.getDate()
-	 var week = d.getDay()
-	 var hour = d.getHours()
-	 var minute = d.getMinutes()
-	 var second = d.getSeconds()
-	 var millsecond = paddingLeft(String(d.getMilliseconds()), '0', 7)
+	 var year = d.getFullYear();
+	 var month = d.getMonth();
+	 var day = d.getDate();
+	 var week = d.getDay();
+	 var hour = d.getHours();
+	 var minute = d.getMinutes();
+	 var second = d.getSeconds();
+	 var millsecond = paddingLeft(String(d.getMilliseconds()), '0', 7);
 
 	 var formated = pattern.map(function(s){
 	   switch(s){
 		 case 'y': 
-		   return String(+(String(year).slice(-2)))
+		   return String(+(String(year).slice(-2)));
 		 case 'yy': 
-		   return String(year).slice(-2)
+		   return String(year).slice(-2);
 		 case 'yyy': 
-		   return String(year).slice(-3)
+		   return String(year).slice(-3);
 		 case 'yyyy': 
-		   return String(year).slice(-4)
+		   return String(year).slice(-4);
 		 case 'M': 
-		   return String(month + 1)
+		   return String(month + 1);
 		 case 'MM': 
-		   return paddingLeft(String(month + 1), '0', 2)
+		   return paddingLeft(String(month + 1), '0', 2);
 		 case 'MMM': 
-		   return longMonthsInYear[month].slice(0, 3)
+		   return longMonthsInYear[month].slice(0, 3);
 		 case 'MMMM': 
-		   return longMonthsInYear[month]
+		   return longMonthsInYear[month];
 		 case 'd': 
-		   return String(day)
+		   return String(day);
 		 case 'dd': 
-		   return paddingLeft(String(day), '0', 2)
+		   return paddingLeft(String(day), '0', 2);
 		 case 'ddd': 
-		   return daysInWeek[week].slice(0, 3)
+		   return daysInWeek[week].slice(0, 3);
 		 case 'dddd':
-		   return daysInWeek[week]
+		   return daysInWeek[week];
 		 case 'h': 
-		   return String(hour > 12 ? (hour - 12) : hour)
+		   return String(hour > 12 ? (hour - 12) : hour);
 		 case 'hh':
-		   return paddingLeft(String(hour > 12 ? (hour - 12) : hour), '0', 2)
+		   return paddingLeft(String(hour > 12 ? (hour - 12) : hour), '0', 2);
 		 case 'H':
-		   return String(hour)
+		   return String(hour);
 		 case 'HH':
-		   return paddingLeft(String(hour), '0', 2)
+		   return paddingLeft(String(hour), '0', 2);
 		 case 'm': 
-		   return String(minute)
+		   return String(minute);
 		 case 'mm': 
-		   return paddingLeft(String(minute), '0', 2)
+		   return paddingLeft(String(minute), '0', 2);
 		 case 's': 
-		   return String(second)
+		   return String(second);
 		 case 'ss': 
-		   return paddingLeft(String(second), '0', 2)
+		   return paddingLeft(String(second), '0', 2);
 		 case 'f': 
-		   return millsecond.slice(0, 1)
+		   return millsecond.slice(0, 1);
 		 case 'ff': 
-		   return millsecond.slice(0, 2)
+		   return millsecond.slice(0, 2);
 		 case 'fff': 
-		   return millsecond.slice(0, 3)
+		   return millsecond.slice(0, 3);
 		 case 'ffff': 
-		   return millsecond.slice(0, 4)
+		   return millsecond.slice(0, 4);
 		 case 'fffff': 
-		   return millsecond.slice(0, 5)
+		   return millsecond.slice(0, 5);
 		 case 'ffffff': 
-		   return millsecond.slice(0, 6)
+		   return millsecond.slice(0, 6);
 		 case 'fffffff': 
-		   return millsecond.slice(0, 7)
+		   return millsecond.slice(0, 7);
 		 case 'F': 
-		   return millsecond.slice(0, 1) == '0' ? '' : millsecond.slice(0, 1)
+		   return millsecond.slice(0, 1) == '0' ? '' : millsecond.slice(0, 1);
 		 case 'FF': 
-		   return +(millsecond.slice(0, 2)) == 0 ? '' : (+(millsecond.slice(0, 2)))
+		   return +(millsecond.slice(0, 2)) == 0 ? '' : (+(millsecond.slice(0, 2)));
 		 case 'FFF': 
-		   return +(millsecond.slice(0, 3)) == 0 ? '' : (+(millsecond.slice(0, 3)))
+		   return +(millsecond.slice(0, 3)) == 0 ? '' : (+(millsecond.slice(0, 3)));
 		 case 'FFFF': 
-		   return +(millsecond.slice(0, 4)) == 0 ? '' : (+(millsecond.slice(0, 4)))
+		   return +(millsecond.slice(0, 4)) == 0 ? '' : (+(millsecond.slice(0, 4)));
 		 case 'FFFFF': 
-		   return +(millsecond.slice(0, 5)) == 0 ? '' : (+(millsecond.slice(0, 5)))
+		   return +(millsecond.slice(0, 5)) == 0 ? '' : (+(millsecond.slice(0, 5)));
 		 case 'FFFFFF': 
-		   return +(millsecond.slice(0, 6)) == 0 ? '' : (+(millsecond.slice(0, 6)))
+		   return +(millsecond.slice(0, 6)) == 0 ? '' : (+(millsecond.slice(0, 6)));
 		 case 'FFFFFFF': 
-		   return +(millsecond.slice(0, 7)) == 0 ? '' : (+(millsecond.slice(0, 7)))
+		   return +(millsecond.slice(0, 7)) == 0 ? '' : (+(millsecond.slice(0, 7)));
 		 default: 
-		   return s
+		   return s;
 	   }
 	 })
-	 return formated.join('')
+	 return formated.join('');
 	}
   }
   
   function paddingLeft(s, p, l){
-	if(s.length >= l) return s
+	if(s.length >= l) return s;
 	while(s.length < l){
-	  s = p + s
+	  s = p + s;
 	 }
-	 return s
+	 return s;
    }
 
    // Gets the input controls for a field (used for Textboxes)
@@ -663,10 +663,10 @@ var SPUtility = (function ($) {
       this.Name = fieldParams.name;
       this.InternalName = fieldParams.internalName;
       this.IsRequired = fieldParams.isRequired;
-      this.Type = fieldParams.type;
-
-	  var children = $(fieldParams.controlsCell).children("span").not("script"); // support for binding framework e.g. jsviews
-	  //.last() will return wrong control for some fields
+	  this.Type = fieldParams.type;
+	  
+	  var children = $(fieldParams.controlsCell).children("span[dir]"); // support for binding framework e.g. jsviews
+	  //.children("span").last() will return description control
       if (children.length > 0) {
          this.Controls = children[0];
       } else {
