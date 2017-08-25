@@ -19,7 +19,8 @@
      "_spPageContextInfo": false,
      "ChangeContentType": false,
      "SP": false,
-     "console": false
+	 "console": false,
+	 "Microsoft": false
   },
   "exported": [ "SPUtility" ]
 }
