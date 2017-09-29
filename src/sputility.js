@@ -1847,7 +1847,7 @@ var SPUtility = (function ($) {
 
 			if (option[prop] === value) {
 				option.selected = true;
-				break; // found what we were looking for
+				//break; // found what we were looking for
 			} else {
 				option.selected = false;
 			}
