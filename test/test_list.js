@@ -192,6 +192,17 @@
       ok(this.field.EditorInput, 'EditorInput property not set');
    });*/
 
+   module("SPAttachmentField", {
+	   setup: function(){
+		   this.field = SPUtility.GetSPField('Attachments');
+	   }
+   });
+
+   test('GetSPField()', function(){
+	   expect(1);
+	   strictEqual(this.field.Type, "SPFieldAttachments", "The field's type should be " + this.field.Type);
+   });
+
    module("Miscellaneous tests");
 
    test('Splitting autocomplete choices', function() {

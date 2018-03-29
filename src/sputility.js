@@ -2114,6 +2114,23 @@ var SPUtility = (function ($) {
 	SPTaxonomyField.prototype.MakeReadOnly = function () {
 		return this._makeReadOnly(this.GetValueString());
 	};
+
+	// Inherit from SPField
+	function SPAttachmentField(fieldParams) {
+		SPField.call(this, fieldParams);
+		this.Controls = $('#idAttachmentsTable', this.controlsCell)[0];
+	}
+	SPAttachmentField.prototype = Object.create(SPField.prototype);
+	SPAttachmentField.prototype.GetValue = function(){
+		var attachments = [];
+		if(this.Controls){
+			attachments = $(this.Controls).find('a').map(function(idx, ele){
+				return ele.innerText;
+			});
+		}
+
+		return attachments;
+	};
 	
 	/*
 	*   SPDispFormTextField class
@@ -2285,6 +2302,9 @@ var SPUtility = (function ($) {
 			case 'SPFieldTaxonomyFieldType':
 			case 'SPFieldTaxonomyFieldTypeMulti':
 				field = new SPTaxonomyField(spFieldParams);
+				break;
+			case 'SPFieldAttachments':
+				field = new SPAttachmentField(spFieldParams);
 				break;
 			default:
 				field = new SPField(spFieldParams);
